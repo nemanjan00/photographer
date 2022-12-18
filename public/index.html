@@ -59,11 +59,29 @@
 
 				const carousel = document.querySelector("#carousel");
 
+				const loadImage = (img, url, thumbnail) => {
+					img.src = thumbnail;
+
+					const tmpImg = document.createElement("img");
+
+					tmpImg.src = url;
+
+					console.log(tmpImg);
+
+					tmpImg.onload = () => {
+						img.src = tmpImg.src;
+					};
+				};
+
 				const carouselImgs = Array(3).fill(true).map(() => {
 					const img = document.createElement("img");
 
 					img.classList.add("carousel__item");
-					img.src = photos[0].thumbnail;
+					img.alt = photos[0].name;
+					img.width = 160 * 3;
+					img.height = 90 * 3;
+
+					loadImage(img, photos[0].path, photos[0].thumbnail);
 
 					return img;
 				});
@@ -73,10 +91,6 @@
 				carouselImgs[1].classList.add("carousel__item-visible");
 
 				document.querySelector("#title").innerText = album.title;
-
-				console.log(carousel);
-
-				console.log(album, photos);
 			})();
 		</script>
 	</body>

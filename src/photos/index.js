@@ -1,6 +1,8 @@
 const fs = require("fs");
 const path = require("path");
 
+const sharp = require("sharp");
+
 const crypto = require("crypto");
 
 const ExifImage = require("exif").ExifImage;
@@ -24,16 +26,36 @@ module.exports = (photosPath) => {
 				photo.hash = hash;
 				photo.path = `${path.join("photos", photo.path)}?photo_hash=${hash}`;
 
-				new ExifImage({image: photoData}, (error, exifData) => {
-					if(error) {
-						console.error(error);
+				const promises = [
+					sharp(photoData)
+						.resize(9, 9)
+						.jpeg({ mozjpeg: true })
+						.toBuffer()
+						.then( data => {
+							photo.thumbnail = `data:image/jpeg;base64, ${data.toString("base64")}`;
+						})
+						.catch( err => {
+							console.error(err);
+						}),
+					new Promise((resolve) => {
+						new ExifImage({image: photoData}, (error, exifData) => {
+							if(error) {
+								console.error(error);
 
-						return resolve(photo);
-					}
+								photo.exif = {};
 
-					photo.exif = exifData;
+								return resolve();
+							}
 
-					resolve(photo);
+							photo.exif = exifData;
+
+							resolve();
+						});
+					})
+				];
+
+				return Promise.all(promises).then(() => {
+					return resolve(photo);
 				});
 			});
 		});
