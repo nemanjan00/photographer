@@ -9,6 +9,9 @@
   "private": false,
   "dependencies": {
     "@fastify/static": "^6.6.0",
-    "fastify": "^4.10.2"
+    "exif": "^0.6.0",
+    "fastify": "^4.10.2",
+    "mustache": "^4.2.0",
+    "yaml": "^2.1.3"
   }
 }

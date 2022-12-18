@@ -1,8 +1,20 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 		<title>Photographer</title>
+
+		<style>
+			.carousel__item {
+				display: none;
+			}
+
+			.carousel__item-visible {
+				display: block;
+			}
+		</style>
 
 		<script>
 			const registerServiceWorker = async () => {
@@ -26,10 +38,47 @@
 				}
 			};
 
-			registerServiceWorker();
+			//registerServiceWorker();
+		</script>
+
+		<script type="application/json" id="data">
+			{{ &json }}
 		</script>
 	</head>
+
 	<body>
+		<span id="title"></span>
+		<div id="carousel"></div>
+
+		<script type="text/javascript">
+			(() => {
+				const data = JSON.parse(document.getElementById("data").innerHTML);
+
+				const photos = data.photos.filter(photo => photo.albums.includes("main"));
+				const album = data.albums.main;
+
+				const carousel = document.querySelector("#carousel");
+
+				const carouselImgs = Array(3).fill(true).map(() => {
+					const img = document.createElement("img");
+
+					img.classList.add("carousel__item");
+					img.src = photos[0].thumbnail;
+
+					return img;
+				});
+
+				carouselImgs.forEach(img => carousel.append(img));
+
+				carouselImgs[1].classList.add("carousel__item-visible");
+
+				document.querySelector("#title").innerText = album.title;
+
+				console.log(carousel);
+
+				console.log(album, photos);
+			})();
+		</script>
 	</body>
 </html>
 

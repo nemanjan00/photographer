@@ -1,0 +1,10 @@
+---
+albums:
+  main:
+    title: "Nemanja"
+
+photos:
+  - name: "Chrismas is coming"
+    path: "./photo_1.jpg"
+    albums:
+      - main
