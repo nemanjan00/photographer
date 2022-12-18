@@ -9,6 +9,9 @@ const ExifImage = require("exif").ExifImage;
 
 const YAML = require("yaml");
 
+const THUMB_W = 16;
+const THUMB_H = 9;
+
 module.exports = (photosPath) => {
 	const meta = YAML.parse(fs.readFileSync(path.join(photosPath, "photos.yml")) + "");
 
@@ -18,7 +21,7 @@ module.exports = (photosPath) => {
 				if(error) {
 					console.error(error);
 
-					return resolve(photo);
+					return reject(error);
 				}
 
 				const hash = crypto.createHash("sha256").update(photoData).digest("hex");
@@ -28,11 +31,29 @@ module.exports = (photosPath) => {
 
 				const promises = [
 					sharp(photoData)
-						.resize(9, 9)
+						.resize(THUMB_W, THUMB_H)
 						.jpeg({ mozjpeg: true })
 						.toBuffer()
 						.then( data => {
 							photo.thumbnail = `data:image/jpeg;base64, ${data.toString("base64")}`;
+						})
+						.catch( err => {
+							console.error(err);
+						}),
+					sharp(photoData)
+						.resize(THUMB_W, THUMB_H)
+						.raw()
+						.toBuffer()
+						.then( data => {
+							const topPixels = Array(THUMB_W).fill(true).map((_, i) => {
+								const chans = data.slice(i * 3, (i + 1) * 3);
+
+								return "#" + Array.from(chans).map(chan => {
+									return chan.toString(16).padStart(2, "0");
+								}).join("");
+							});
+
+							photo.top = topPixels;
 						})
 						.catch( err => {
 							console.error(err);
@@ -64,7 +85,7 @@ module.exports = (photosPath) => {
 	return Promise.all(photosPromise).then(photos => {
 		meta.photos = photos;
 
-		console.log(JSON.stringify(meta, null, 4));
+		//console.log(JSON.stringify(meta, null, 4));
 
 		return meta;
 	});
