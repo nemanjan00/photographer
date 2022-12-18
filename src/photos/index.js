@@ -53,7 +53,16 @@ module.exports = (photosPath) => {
 								}).join("");
 							});
 
+							const leftPixels = Array(THUMB_H).fill(true).map((_, i) => {
+								const chans = data.slice(i * THUMB_W, 3 + i * THUMB_W);
+
+								return "#" + Array.from(chans).map(chan => {
+									return chan.toString(16).padStart(2, "0");
+								}).join("");
+							});
+
 							photo.top = topPixels;
+							photo.left = leftPixels;
 						})
 						.catch( err => {
 							console.error(err);
@@ -85,7 +94,7 @@ module.exports = (photosPath) => {
 	return Promise.all(photosPromise).then(photos => {
 		meta.photos = photos;
 
-		//console.log(JSON.stringify(meta, null, 4));
+		console.log(JSON.stringify(meta, null, 4));
 
 		return meta;
 	});
