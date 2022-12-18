@@ -1,7 +1,7 @@
 {
   "name": "photographer",
   "version": "0.0.0",
-  "description": "Superfast photo portfolio",
+  "description": "Experiment in super-fast loading and my photography portfolio",
   "main": "index.js",
   "repository": "git@github.com:nemanjan00/photographer.git",
   "author": "nemanjan00 <nemanjan00@gmail.com>",
